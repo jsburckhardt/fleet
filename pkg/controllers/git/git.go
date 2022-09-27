@@ -596,9 +596,12 @@ func argsAndEnvs(gitrepo *fleet.GitRepo) ([]string, []corev1.EnvVar) {
 		args = append(args, "--debug", "--debug-level", "9")
 	}
 
+	bundleLabels := labels.Set(gitrepo.Labels)
+	bundleLabels[fleet.RepoLabel] = gitrepo.Name
+
 	args = append(args,
 		"--targets-file=/run/config/targets.yaml",
-		"--label="+fleet.RepoLabel+"="+gitrepo.Name,
+		"--label="+bundleLabels.String(),
 		"--namespace", gitrepo.Namespace,
 		"--service-account", gitrepo.Spec.ServiceAccount,
 		fmt.Sprintf("--sync-generation=%d", gitrepo.Spec.ForceSyncGeneration),
